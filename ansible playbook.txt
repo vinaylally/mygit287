@@ -1,0 +1,35 @@
+---
+- name: configuring tomcat9
+  hosts: all
+  tasks:
+    - name: intalling tomcat9
+      apt:
+        name: tomcat9
+        state: present
+        update_cache: yes
+    - name: installing tomcat9-admin
+      apt:
+        name: tomcat9-admin
+        state: present
+    - name: copy the tomcat-users.xml
+      copy:
+        src: tomcat-users.xml
+        dest: /etc/tomcat9
+    - name: replace port number
+      replace:
+        regexp: 8080
+        replace: 9090
+        path: /etc/tomcat9/server.xml
+    - name: service restart
+      service:
+        name: tomcat9
+        state: restarted
+    - name: pause the checking
+      pause:
+        minutes: 1
+    - name: uri check
+      uri:
+        url: http://15.206.82.142:9090
+        status_code: 200
+...
+ansible-playbook playbook1.yml -b
